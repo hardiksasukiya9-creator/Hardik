@@ -25,21 +25,34 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
+      - name: Set up Android SDK tools
         uses: android-actions/setup-android@v4
         with:
-          cmdline-tools-version: 15859902
+          cmdline-tools-version: '15859902'
           accept-android-sdk-licenses: 'true'
           log-accepted-android-sdk-licenses: 'false'
-          packages: 'platform-tools platforms;android-36-ext1 build-tools;36.0.0'
+          packages: ''
+
+      - name: Accept Android SDK licenses
+        run: |
+          yes | sdkmanager --licenses
+
+      - name: Install required Android SDK packages
+        run: |
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-36-ext1" \
+            "build-tools;36.0.0"
 
       - name: Install Gradle 9.3.1
         run: |
-          curl -fsSL https://services.gradle.org/distributions/gradle-9.3.1-bin.zip -o "$RUNNER_TEMP/gradle.zip"
+          curl -fsSL \
+            https://services.gradle.org/distributions/gradle-9.3.1-bin.zip \
+            -o "$RUNNER_TEMP/gradle.zip"
           unzip -q "$RUNNER_TEMP/gradle.zip" -d "$RUNNER_TEMP"
           echo "$RUNNER_TEMP/gradle-9.3.1/bin" >> "$GITHUB_PATH"
 
-      - name: Verify project files
+      - name: Check project files
         run: |
           test -f settings.gradle.kts
           test -f build.gradle.kts
